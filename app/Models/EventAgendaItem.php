@@ -11,7 +11,7 @@ class EventAgendaItem extends Model
 
     public function contacts()
     {
-      return $this->belongsToMany(Contact::class);
+      return $this->belongsToMany(Contact::class)->withPivot(['contact_id','user_id','post_notes'])->as('event_agenda_item_pivot');
     }
 
     public function event()

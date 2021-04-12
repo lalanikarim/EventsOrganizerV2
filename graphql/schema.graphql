@@ -1,0 +1,100 @@
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+    users: [User!]! @paginate(defaultCount: 10)
+    user(id: ID @eq): User @find
+    locations: [Location!]! @paginate(defaultCount: 10)
+    eventTypes: [EventType!]! @paginate(defaultCount: 10)
+    agendaTypes: [AgendaType!]! @paginate(defaultCount: 10)
+    events: [Event!]! @paginate(defaultCount: 10)
+    contacts: [Contact!]! @paginate(defaultCount: 10)
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    is_admin: Boolean
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Location {
+  id: ID!
+  name: String!
+}
+
+type AgendaType {
+  id: ID!
+  name: String!
+  event_pivot: AgendaTypeEvent 
+  event_type_pivot: AgendaTypeEventType
+}
+
+type EventType {
+  id: ID!
+  name: String!
+  agenda_types: [AgendaType!]! @belongsToMany
+  events: [Event!]! @hasMany(type: PAGINATOR, defaultCount: 10)
+}
+
+type Event {
+  id: ID!
+  event_type: EventType!
+  date: DateTime!
+  location: Location!
+  name: String!
+  state: Int!
+  agenda_types: [AgendaType!]! @belongsToMany
+  agenda_items: [EventAgendaItem!] @hasMany
+}
+
+type EventAgendaItem {
+  id: ID!
+  event: Event!
+  agenda_type: AgendaType!
+  sort_id: Int!
+  pre_notes: String
+  contacts: [Contact!]! @belongsToMany
+}
+
+type AgendaTypeEvent{
+  id: ID!
+  sort_id: Int!
+  pre_notes: String
+}
+
+type AgendaTypeEventType {
+  id: ID!
+}
+
+type Gender {
+  id: ID!
+  name: String!
+}
+
+type ContactType {
+  id: ID!
+  name: String!
+}
+
+type Contact {
+  id: ID!
+  given_name: String!
+  last_name: String!
+  group_name: String
+  gender: Gender! @belongsTo
+  contact_type: ContactType! @belongsTo
+  event_agenda_item_pivot: ContactEventAgendaItem
+}
+
+type ContactEventAgendaItem {
+  event_agenda_item: Int!
+  contact_id: Int!
+  user_id: Int!
+  post_notes: String
+}

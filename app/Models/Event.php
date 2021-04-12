@@ -16,7 +16,7 @@ class Event extends Model
 
     public function agenda_types()
     {
-      return $this->belongsToMany(AgendaType::class)->withPivot(['id','sort_id']);
+      return $this->belongsToMany(AgendaType::class,'event_agenda_items')->withPivot(['id','sort_id'])->as('event_pivot');
     }
 
     public function event_type()
